@@ -36,6 +36,7 @@ const TicketDetailPage = () => {
       const response = await ticketService.getById(id);
       setTicket(response.data);
     } catch (error) {
+      console.error('Failed to load ticket:', error);
       toast.error('Failed to load ticket');
       navigate('/tickets');
     } finally {
@@ -49,6 +50,7 @@ const TicketDetailPage = () => {
       setComments(response.data || []);
     } catch (error) {
       console.error('Failed to load comments:', error);
+      // Don't show error toast for comments, just log it
     }
   };
 
@@ -80,6 +82,29 @@ const TicketDetailPage = () => {
     } catch (error) {
       toast.error('Failed to delete ticket');
     }
+  };
+
+  // Get the base URL for attachments
+  const getAttachmentUrl = (filePath) => {
+    if (!filePath) return '';
+    
+    // If it's already a full URL, return it
+    if (filePath.startsWith('http://') || filePath.startsWith('https://')) {
+      return filePath;
+    }
+    
+    // Otherwise, construct the URL from environment variable or default
+    const baseUrl = import.meta.env?.VITE_API_URL || 
+                    process.env.REACT_APP_API_URL || 
+                    'http://localhost:5000';
+    
+    // Remove '/api/v1' from base URL if it exists
+    const cleanBaseUrl = baseUrl.replace('/api/v1', '');
+    
+    // Ensure filePath starts with /
+    const cleanPath = filePath.startsWith('/') ? filePath : `/${filePath}`;
+    
+    return `${cleanBaseUrl}${cleanPath}`;
   };
 
   if (loading) {
@@ -147,7 +172,7 @@ const TicketDetailPage = () => {
 
           <div className="flex items-center space-x-6 text-sm text-gray-500">
             <div>
-              <span className="font-medium">Created by:</span> {ticket.customer?.name}
+              <span className="font-medium">Created by:</span> {ticket.customer?.name || 'Unknown'}
             </div>
             <div>
               <span className="font-medium">Created:</span> {formatDateTime(ticket.createdAt)}
@@ -171,12 +196,12 @@ const TicketDetailPage = () => {
                 {ticket.attachments.map((file, index) => (
                   <a
                     key={index}
-                    href={`${process.env.REACT_APP_API_URL}/${file.path}`}
+                    href={getAttachmentUrl(file.path)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100"
+                    className="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                   >
-                    <span className="text-sm text-gray-700">{file.originalName}</span>
+                    <span className="text-sm text-gray-700">{file.originalName || `Attachment ${index + 1}`}</span>
                   </a>
                 ))}
               </div>
@@ -215,7 +240,7 @@ const TicketDetailPage = () => {
               <div key={comment._id} className="border-l-4 border-primary-200 pl-4 py-2">
                 <div className="flex items-center space-x-2 mb-2">
                   <span className="font-medium text-gray-900">
-                    {comment.author?.name}
+                    {comment.author?.name || 'Unknown User'}
                   </span>
                   <span className="text-sm text-gray-500">
                     {formatTimeAgo(comment.createdAt)}

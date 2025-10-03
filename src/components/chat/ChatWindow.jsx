@@ -23,6 +23,7 @@ const ChatWindow = ({ ticketId, receiverId, receiverName }) => {
       socket.joinTicket(ticketId);
       fetchMessages();
 
+      // Listen for new messages
       socket.on('message_received', handleNewMessage);
       socket.on('user_typing', handleTyping);
       socket.on('user_stop_typing', handleStopTyping);
@@ -69,7 +70,9 @@ const ChatWindow = ({ ticketId, receiverId, receiverName }) => {
   const handleSendMessage = async (e) => {
     e.preventDefault();
 
-    if (!newMessage.trim() && !attachment) return;
+    if (!newMessage.trim() && !attachment) {
+      return;
+    }
 
     try {
       await socket.sendMessage({
@@ -95,7 +98,9 @@ const ChatWindow = ({ ticketId, receiverId, receiverName }) => {
 
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
-    if (file) setAttachment(file);
+    if (file) {
+      setAttachment(file);
+    }
   };
 
   const scrollToBottom = () => {
@@ -144,9 +149,13 @@ const ChatWindow = ({ ticketId, receiverId, receiverName }) => {
                 <div className={`flex space-x-2 max-w-xs lg:max-w-md ${isOwn ? 'flex-row-reverse space-x-reverse' : ''}`}>
                   <Avatar name={message.sender?.name} size="small" />
                   <div>
-                    <div className={`rounded-lg px-4 py-2 ${
-                      isOwn ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-900'
-                    }`}>
+                    <div
+                      className={`rounded-lg px-4 py-2 ${
+                        isOwn
+                          ? 'bg-primary-600 text-white'
+                          : 'bg-gray-100 text-gray-900'
+                      }`}
+                    >
                       <p className="text-sm">{message.message}</p>
                     </div>
                     <p className="text-xs text-gray-500 mt-1">
@@ -158,24 +167,25 @@ const ChatWindow = ({ ticketId, receiverId, receiverName }) => {
             );
           })
         )}
+        
         {typing && (
-          <div className="flex justify-start">
-            <div className="bg-gray-100 rounded-lg px-4 py-2">
-              <div className="flex space-x-1">
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
-              </div>
+          <div className="flex items-center space-x-2 text-gray-500 text-sm">
+            <div className="flex space-x-1">
+              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-100"></div>
+              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-200"></div>
             </div>
+            <span>typing...</span>
           </div>
         )}
+        
         <div ref={messagesEndRef} />
       </div>
 
       {/* Input Area */}
-      <form onSubmit={handleSendMessage} className="p-4 border-t">
+      <form onSubmit={handleSendMessage} className="border-t p-4">
         {attachment && (
-          <div className="mb-2 flex items-center justify-between p-2 bg-gray-50 rounded">
+          <div className="flex items-center justify-between mb-2 p-2 bg-gray-50 rounded">
             <span className="text-sm text-gray-700">{attachment.name}</span>
             <button
               type="button"
@@ -186,32 +196,31 @@ const ChatWindow = ({ ticketId, receiverId, receiverName }) => {
             </button>
           </div>
         )}
-        <div className="flex space-x-2">
-          <label className="flex-shrink-0 cursor-pointer">
+        
+        <div className="flex items-center space-x-2">
+          <label className="cursor-pointer p-2 hover:bg-gray-100 rounded-lg">
+            <Paperclip className="w-5 h-5 text-gray-600" />
             <input
               type="file"
               onChange={handleFileSelect}
               className="hidden"
               accept="image/*,.pdf,.doc,.docx"
             />
-            <div className="p-2 hover:bg-gray-100 rounded-lg">
-              <Paperclip className="w-5 h-5 text-gray-600" />
-            </div>
           </label>
+          
           <input
             type="text"
             value={newMessage}
-            onChange={(e) => {
-              setNewMessage(e.target.value);
-              handleTypingStart();
-            }}
+            onChange={(e) => setNewMessage(e.target.value)}
+            onKeyPress={handleTypingStart}
             placeholder="Type a message..."
-            className="flex-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           />
+          
           <button
             type="submit"
             disabled={!newMessage.trim() && !attachment}
-            className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Send className="w-5 h-5" />
           </button>
