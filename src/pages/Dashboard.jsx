@@ -26,10 +26,13 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     try {
       const response = await ticketService.getAll({ limit: 5 });
-      setRecentTickets(response.data || []);
+      
+      // Handle different response structures
+      const allTickets = response.data?.tickets || response.data || [];
+      
+      setRecentTickets(allTickets);
       
       // Calculate stats
-      const allTickets = response.data || [];
       setStats({
         total: allTickets.length,
         open: allTickets.filter(t => t.status === 'Open').length,
@@ -38,6 +41,8 @@ const Dashboard = () => {
       });
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
+      setRecentTickets([]);
+      setStats({ total: 0, open: 0, inProgress: 0, resolved: 0 });
     } finally {
       setLoading(false);
     }
@@ -48,7 +53,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-8">
       {/* Welcome Section */}
       <div className="bg-white rounded-lg shadow-card p-6">
         <h1 className="text-2xl font-bold text-gray-900">

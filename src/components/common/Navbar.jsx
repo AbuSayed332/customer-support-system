@@ -28,7 +28,7 @@ const Navbar = ({ onMenuClick }) => {
             </button>
             
             <Link to="/dashboard" className="flex items-center ml-4 lg:ml-0">
-              <span className="text-xl font-bold text-primary-600">
+              <span className="text-xl font-bold text-primary-600 ">
                 Support System
               </span>
             </Link>

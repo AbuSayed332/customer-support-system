@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Filter } from 'lucide-react';
+import { toast } from 'react-toastify';
 import ticketService from '../../services/ticketService';
 import TicketCard from './TicketCard';
 import Button from '../common/Button';
@@ -43,14 +44,51 @@ const TicketList = () => {
         category: filters.category,
       });
       
-      setTickets(response.data || []);
+      // Debug log to see what we're getting
+      console.log('Tickets API Response:', response);
+      
+      // Safely handle response - check if response exists first
+      if (!response) {
+        console.error('Response is undefined or null');
+        setTickets([]);
+        setPagination({
+          currentPage: 1,
+          totalPages: 1,
+          total: 0,
+        });
+        return;
+      }
+      
+      const ticketData = response.data || [];
+      const totalCount = typeof response.total === 'number' ? response.total : 0;
+      
+      console.log('Ticket Data:', ticketData);
+      console.log('Total Count:', totalCount);
+      
+      setTickets(Array.isArray(ticketData) ? ticketData : []);
       setPagination({
         currentPage: pagination.currentPage,
-        totalPages: Math.ceil(response.total / 10),
-        total: response.total,
+        totalPages: totalCount > 0 ? Math.ceil(totalCount / 10) : 1,
+        total: totalCount,
       });
     } catch (error) {
       console.error('Failed to fetch tickets:', error);
+      console.error('Error details:', {
+        message: error.message,
+        response: error.response,
+        request: error.request
+      });
+      
+      // Set default empty values on error
+      setTickets([]);
+      setPagination({
+        currentPage: 1,
+        totalPages: 1,
+        total: 0,
+      });
+      
+      // Show user-friendly message
+      toast.error('Unable to load tickets. Please try again.');
     } finally {
       setLoading(false);
     }
