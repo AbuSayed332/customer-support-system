@@ -61,6 +61,11 @@ const authService = {
   isAuthenticated: () => {
     return !!localStorage.getItem('token');
   },
+
+    removeToken: () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  },
 };
 
 export default authService;

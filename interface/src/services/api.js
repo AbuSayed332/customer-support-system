@@ -4,13 +4,16 @@ import { toast } from 'react-toastify';
 // Create axios instance
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1',
-  timeout: 15000,
+  timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
     Authorization: `Bearer ${localStorage.getItem('token')}`,
   },
   withCredentials: true,
 });
+
+console.log('API Base URL:', import.meta.env.VITE_API_URL);
+console.log('Full API instance baseURL:', api.defaults.baseURL);
 
 // Request interceptor
 api.interceptors.request.use(

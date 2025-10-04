@@ -8,6 +8,7 @@ const { errorHandler, notFound } = require('./middleware/errorHandler');
 
 // Initialize express app
 const app = express();
+app.set('trust proxy', 1);
 
 // ============================================================================
 // SECURITY MIDDLEWARE
@@ -115,10 +116,15 @@ app.use(cookieParser());
 // ============================================================================
 
 // Morgan - HTTP request logger
-if (process.env.NODE_ENV === 'development') {
-  app.use(morgan('dev'));
-} else {
-  app.use(morgan('combined'));
+
+// if (process.env.NODE_ENV === 'development') {
+//   app.use(morgan('dev'));
+// } else {
+//   app.use(morgan('combined'));
+// }
+
+if (process.env.NODE_ENV !== 'development') {
+  app.use('/api/', limiter);
 }
 
 // ============================================================================
