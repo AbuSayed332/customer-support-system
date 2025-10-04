@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 ﻿const mongoose = require('mongoose');
+=======
+const mongoose = require('mongoose');
+>>>>>>> 74020d9ba49482918bfee0022530c45616d68dc8
 
 const connectDB = async () => {
   try {
@@ -31,4 +35,8 @@ const connectDB = async () => {
   }
 };
 
+<<<<<<< HEAD
 module.exports = connectDB;
+=======
+module.exports = connectDB;
+>>>>>>> 74020d9ba49482918bfee0022530c45616d68dc8

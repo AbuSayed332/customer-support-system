@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 ﻿/**
+=======
+/**
+>>>>>>> 74020d9ba49482918bfee0022530c45616d68dc8
  * Error handler middleware
  */
 const errorHandler = (err, req, res, next) => {
@@ -98,4 +102,8 @@ module.exports = {
   errorHandler,
   notFound,
   asyncHandler,
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> 74020d9ba49482918bfee0022530c45616d68dc8
