@@ -24,24 +24,49 @@ app.use(helmet());
 //   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
 //   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
 // };
-const corsOptions = {
-  origin: [
-    'https://customer-support-system-5mpt.vercel.app',
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'https://customer-support-system-0t0h.onrender.com'
-  ],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
-  optionsSuccessStatus: 200,
-  preflightContinue: false
-};
 
+
+// const corsOptions = {
+//   origin: [
+//     'https://customer-support-system-5mpt.vercel.app',
+//     'http://localhost:5173',
+//     'http://localhost:3000',
+//     'https://customer-support-system-0t0h.onrender.com'
+//   ],
+//   credentials: true,
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+//   optionsSuccessStatus: 200,
+//   preflightContinue: false
+// };
+
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'https://customer-support-system-5mpt.vercel.app', // Add your Vercel URL
+];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, Postman, or curl)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  optionsSuccessStatus: 200,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+};
 
 app.use(cors(corsOptions));
 
-app.options('*', cors(corsOptions));
+
+
 // Rate Limiting - Prevent abuse
 // const limiter = rateLimit({
 //   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW) * 60 * 1000 || 15 * 60 * 1000, // 15 minutes
