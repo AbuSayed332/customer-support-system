@@ -97,14 +97,6 @@ process.on('uncaughtException', (err) => {
   });
 });
 
-app.use((err, req, res, next) => {
-  console.error('Server Error:', err.stack);
-  res.status(500).json({
-    message: 'Internal Server Error',
-    error: process.env.NODE_ENV === 'development' ? err.message : {},
-  });
-});
-
 // Handle SIGTERM
 process.on('SIGTERM', () => {
   console.log('👋 SIGTERM signal received: closing HTTP server');
@@ -128,4 +120,3 @@ process.on('SIGINT', () => {
 // ============================================================================
 
 module.exports = server;
-

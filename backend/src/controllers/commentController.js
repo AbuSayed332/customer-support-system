@@ -1,4 +1,6 @@
 const Comment = require('../models/Comment');
+const Ticket = require('../models/Ticket'); // ← Add this line
+
 
 // @desc    Add comment to ticket
 // @route   POST /api/v1/tickets/:ticketId/comments

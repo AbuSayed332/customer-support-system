@@ -1,8 +1,0 @@
-module.exports = {
-  port: process.env.PORT || 5000,
-  mongoURI: process.env.MONGO_URI,
-  jwtSecret: process.env.JWT_SECRET,
-  jwtExpire: process.env.JWT_EXPIRE || '7d',
-  nodeEnv: 'production',
-  corsOrigin: process.env.CORS_ORIGIN || '*',
-};

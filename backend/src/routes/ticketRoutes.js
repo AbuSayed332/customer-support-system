@@ -11,14 +11,8 @@ const {
 const { protect, authorize } = require('../middleware/auth');
 const upload = require('../config/multer');
 
-// Import comment routes
-const commentRoutes = require('./commentRoutes');
-
 // All routes require authentication
 router.use(protect);
-
-// Re-route into comment router
-router.use('/:ticketId/comments', commentRoutes);
 
 // Ticket CRUD routes
 router

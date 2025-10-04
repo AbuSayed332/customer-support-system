@@ -10,11 +10,6 @@ const { errorHandler, notFound } = require('./middleware/errorHandler');
 const app = express();
 
 // ============================================================================
-// IGNORE FAVICON REQUESTS
-// ============================================================================
-app.get('/favicon.ico', (req, res) => res.status(204).send());
-
-// ============================================================================
 // SECURITY MIDDLEWARE
 // ============================================================================
 
@@ -23,38 +18,34 @@ app.use(helmet());
 
 // CORS - Enable Cross-Origin Resource Sharing
 // const corsOptions = {
-//   origin: process.env.CLIENT_URL || 'http://localhost:5173',
-
+//   origin: process.env.CLIENT_URL || 'http://localhost:3000',
 //   credentials: true,
 //   optionsSuccessStatus: 200,
 //   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
 //   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
 // };
-const allowedOrigins = ['http://localhost:5173'];
-
 const corsOptions = {
-  // The origin property can be a string, regex, or a function.
-  // Here, we use a function for more robust checking.
-  origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-      return callback(new Error(msg), false);
-    }
-    return callback(null, true);
-  },
-  // This is crucial for requests that include cookies or authorization headers.
+  origin: ['http://localhost:3000', 'http://localhost:5173'],
   credentials: true,
+  optionsSuccessStatus: 200,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
 };
 
 app.use(cors(corsOptions));
 
 // Rate Limiting - Prevent abuse
+// const limiter = rateLimit({
+//   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW) * 60 * 1000 || 15 * 60 * 1000, // 15 minutes
+//   max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100, // Limit each IP to 100 requests per windowMs
+//   message: 'Too many requests from this IP, please try again later.',
+//   standardHeaders: true,
+//   legacyHeaders: false,
+// });
+
 const limiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW) * 60 * 1000 || 15 * 60 * 1000, // 15 minutes
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100, // Limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: process.env.NODE_ENV === 'development' ? 1000 : 100, // 1000 for dev, 100 for prod
   message: 'Too many requests from this IP, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
@@ -63,6 +54,7 @@ const limiter = rateLimit({
 // Apply rate limiting to all API routes
 app.use('/api/', limiter);
 
+app.get('/favicon.ico', (req, res) => res.status(204).end());
 // Strict rate limiting for authentication routes
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
