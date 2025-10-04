@@ -25,7 +25,9 @@ app.use(helmet());
 //   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
 // };
 const corsOptions = {
-  origin: ['http://localhost:3000', 'http://localhost:5173'],
+  origin: [ 'https://customer-support-system-5mpt.vercel.app',
+    'http://localhost:5173',
+    'http://localhost:3000'],
   credentials: true,
   optionsSuccessStatus: 200,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
