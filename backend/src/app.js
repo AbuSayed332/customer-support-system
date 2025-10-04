@@ -25,17 +25,23 @@ app.use(helmet());
 //   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
 // };
 const corsOptions = {
-  origin: [ 'https://customer-support-system-5mpt.vercel.app',
+  origin: [
+    'https://customer-support-system-5mpt.vercel.app',
     'http://localhost:5173',
-    'http://localhost:3000'],
+    'http://localhost:3000',
+    'https://customer-support-system-0t0h.onrender.com'
+  ],
   credentials: true,
-  optionsSuccessStatus: 200,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+  optionsSuccessStatus: 200,
+  preflightContinue: false
 };
+
 
 app.use(cors(corsOptions));
 
+app.options('*', cors(corsOptions));
 // Rate Limiting - Prevent abuse
 // const limiter = rateLimit({
 //   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW) * 60 * 1000 || 15 * 60 * 1000, // 15 minutes
